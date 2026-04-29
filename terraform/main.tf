@@ -1,4 +1,3 @@
-# Provider configuration
 terraform {
   required_providers {
     aws = {
@@ -15,7 +14,6 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
-# Get the latest Ubuntu 20.04 AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -29,22 +27,21 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
-# EC2 Instance for the microservices
 resource "aws_instance" "app_server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro" # Changed from t2.micro for better Free Tier compatibility
+  instance_type = "t3.micro"
 
   tags = {
     Name = "MicroservicesServer"
   }
 
   user_data = file("setup.sh")
+  user_data_replace_on_change = true
 }
 
-# Security group to allow traffic
 resource "aws_security_group" "allow_web" {
   name        = "allow_web_traffic"
   description = "Allow Web inbound traffic"
