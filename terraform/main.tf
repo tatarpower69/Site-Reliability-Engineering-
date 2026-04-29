@@ -10,13 +10,32 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
+  access_key = var.access_key
+  secret_key = var.secret_key
+}
+
+# Get the latest Ubuntu 20.04 AMI
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
 }
 
 # EC2 Instance for the microservices
 resource "aws_instance" "app_server" {
-  ami           = "ami-08d4ac5b634553e16" # Ubuntu 20.04 LTS
-  instance_type = "t2.micro"
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro" # Changed from t2.micro for better Free Tier compatibility
 
   tags = {
     Name = "MicroservicesServer"
@@ -32,32 +51,32 @@ resource "aws_security_group" "allow_web" {
 
   ingress {
     description      = "HTTP"
-    from_port        = 80
-    to_port          = 80
+    from_port        = var.http_port
+    to_port          = var.http_port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
     description      = "SSH"
-    from_port        = 22
-    to_port          = 22
+    from_port        = var.ssh_port
+    to_port          = var.ssh_port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
     description      = "Grafana"
-    from_port        = 3000
-    to_port          = 3000
+    from_port        = var.grafana_port
+    to_port          = var.grafana_port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
   ingress {
     description      = "Prometheus"
-    from_port        = 9090
-    to_port          = 9090
+    from_port        = var.prometheus_port
+    to_port          = var.prometheus_port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
