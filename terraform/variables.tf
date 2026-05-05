@@ -4,6 +4,18 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "access_key" {
+  description = "AWS Access Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "secret_key" {
+  description = "AWS Secret Key"
+  type        = string
+  sensitive   = true
+}
+
 variable "project_name" {
   description = "Name of the project"
   type        = string

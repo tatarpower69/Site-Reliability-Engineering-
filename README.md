@@ -1,26 +1,49 @@
-﻿# Microservices-System
+# SRE Automation & Capacity Planning Project
 
+This repository contains a containerized microservices system enhanced with SRE principles, automated troubleshooting, and capacity planning analysis.
 
-## Overview
-This project demonstrates a complete DevOps/SRE workflow, including:
-- **Microservices Architecture**: 5 independent services (Auth, User, Product, Order, Chat).
-- **Containerization**: All services packaged with Docker.
-- **Orchestration**: Managed via Docker Compose.
-- **Infrastructure as Code**: AWS infrastructure provisioned using Terraform.
-- **Monitoring & Observability**: Prometheus metrics collection and Grafana visualization.
-- **Incident Management**: Simulation of a production-level failure in the Order Service and structured postmortem analysis.
+## Features
 
-## Technology Stack
-- **Backend**: Python (FastAPI)
-- **Frontend**: JavaScript / HTML (Served via Nginx)
-- **Database**: PostgreSQL
-- **Monitoring**: Prometheus & Grafana
-- **Infrastructure**: Terraform (AWS)
-- **Deployment**: Docker & Docker Compose
+### 1. Automation (Assignment 6)
+- **Automated Deployment**: Orchestrated with Docker Compose and provisioned via Terraform on AWS.
+- **Self-Healing**: Health checks and restart policies for all services.
+- **Configuration Validation**: `validate_config.sh` script to ensure environment correctness before deployment.
+- **Log-Based Troubleshooting**: `troubleshoot.sh` script for automated root cause analysis.
 
-## Project Structure
-- `auth-service/`, `user-service/`, `product-service/`, `order-service/`, `chat-service/`: Microservices source code and Dockerfiles.
-- `frontend/`: Nginx configuration and static frontend files.
-- `monitoring/`: Prometheus configuration.
-- `terraform/`: IaC files (main.tf, variables.tf, outputs.tf, terraform.tfvars).
-- `docker-compose.yml`: Orchestration file for the entire system.
+### 2. Observability & Alerting
+- **Full Monitoring**: Prometheus & Grafana stack.
+- **DB Insights**: Integrated `postgres-exporter` for database health metrics.
+- **Custom Alerts**: 7+ alerting rules (ServiceDown, HighCPU, DBFailure, etc.).
+
+### 3. Capacity Planning
+- **Load Simulation**: `load_test.py` for stress testing the system.
+- **Metrics Analysis**: Documented resource consumption and scaling strategies.
+
+### 4. Infrastructure as Code (Assignment 5)
+- **Professional Terraform**: VPC, Subnets, Internet Gateway, and Automated Key Management.
+
+## Quick Start
+
+1. **Validate Configuration**:
+   ```bash
+   sh validate_config.sh
+   ```
+
+2. **Deploy Locally**:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Analyze Logs**:
+   ```bash
+   sh troubleshoot.sh
+   ```
+
+4. **Run Load Test**:
+   ```bash
+   python load_test.py 20 60
+   ```
+
+## Infrastructure
+
+The cloud environment is provisioned in AWS `us-east-1` using Terraform. See the `terraform/` directory for details.

@@ -154,6 +154,16 @@ services:
           cpus: '1.0'
           memory: 512M
 
+  db-exporter:
+    image: prometheuscommunity/postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-microservices}?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - micro-network
+
   nginx:
     image: nginx:latest
     volumes:

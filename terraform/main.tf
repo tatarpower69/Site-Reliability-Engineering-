@@ -17,7 +17,9 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
+  access_key = var.access_key
+  secret_key = var.secret_key
 }
 
 resource "tls_private_key" "main" {
@@ -155,6 +157,20 @@ resource "aws_instance" "server" {
     volume_size = 20
     volume_type = "gp3"
   }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update
+              apt-get install -y docker.io docker-compose git
+              systemctl start docker
+              systemctl enable docker
+              
+              # Clone and run (you can replace the URL with your repo)
+              cd /home/ubuntu
+              git clone https://github.com/tatarpower69/Site-Reliability-Engineering-.git project
+              cd project
+              docker-compose up -d
+              EOF
 
   tags = {
     Name = "${var.project_name}-server"
