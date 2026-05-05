@@ -1,31 +1,71 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
+from prometheus_client import Gauge, Counter
 import os
 import httpx
+import psycopg2
+import time
+
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("order-service")
 
 app = FastAPI(title="Order Service")
 
-# This will be used to simulate a failure
 DB_HOST = os.getenv("DB_HOST", "db")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_USER = os.getenv("POSTGRES_USER", "user")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "password")
+DB_NAME = os.getenv("POSTGRES_DB", "microservices")
+
 PRODUCT_SERVICE_URL = os.getenv("PRODUCT_SERVICE_URL", "http://product-service:8000")
+
+ACTIVE_ORDERS = Gauge('active_orders_total', 'Total active orders')
+ORDER_CREATION_COUNT = Counter('orders_created_total', 'Total orders created')
+DB_CONNECTED = Gauge('database_connected', 'Database connection status (1 for connected, 0 for failed)')
+
+def get_db_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        connect_timeout=3
+    )
+
+@app.get("/health")
+def health():
+    """Health check endpoint with DB verification."""
+    try:
+        conn = get_db_connection()
+        conn.close()
+        DB_CONNECTED.set(1)
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        DB_CONNECTED.set(0)
+        logger.error(f"DATABASE_CONNECTION_FAILURE: Unable to connect to {DB_HOST}:{DB_PORT}. Error: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Database connection failed: {str(e)}")
 
 @app.get("/")
 def read_root():
     return {"message": "Order Service is running"}
 
+@app.get("/orders")
+async def get_orders():
+    ACTIVE_ORDERS.set(10) # Example value
+    return {"orders": []}
+
 @app.post("/orders")
 async def create_order(product_id: int, quantity: int):
-    # 1. Simulate DB connection check (for the incident simulation)
-    if DB_HOST == "invalid_host":
-        raise HTTPException(status_code=500, detail="Database connection failed")
-    
-    # 2. Inter-service communication: Verify product exists
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{PRODUCT_SERVICE_URL}/products")
+            if response.status_code != 200:
+                raise HTTPException(status_code=503, detail="Product Service unavailable")
+                
             products = response.json()
-            
-            # Check if product_id exists in the returned list
             product_exists = any(p["id"] == product_id for p in products)
             
             if not product_exists:
@@ -33,15 +73,16 @@ async def create_order(product_id: int, quantity: int):
                 
             product_name = next(p["name"] for p in products if p["id"] == product_id)
             
+            ORDER_CREATION_COUNT.inc()
+            return {
+                "status": "order created",
+                "product_id": product_id,
+                "product_name": product_name,
+                "quantity": quantity
+            }
+            
     except httpx.RequestError as exc:
-        raise HTTPException(status_code=503, detail=f"Product Service unavailable: {exc}")
-
-    return {
-        "status": "order created",
-        "product_id": product_id,
-        "product_name": product_name,
-        "quantity": quantity,
-        "message": "Successfully verified via Product Service"
-    }
+        logger.error(f"SERVICE_COMMUNICATION_FAILURE: Error communicating with Product Service at {PRODUCT_SERVICE_URL}. Error: {exc}")
+        raise HTTPException(status_code=503, detail=f"Service communication error: {exc}")
 
 Instrumentator().add(metrics.default()).instrument(app).expose(app)

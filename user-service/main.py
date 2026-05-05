@@ -3,6 +3,10 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(title="User Service")
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 @app.get("/")
 def read_root():
     return {"message": "User Service is running"}

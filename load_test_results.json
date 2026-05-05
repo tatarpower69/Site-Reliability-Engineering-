@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-05-06T01:05:13.528043",
+  "config": {
+    "concurrent_users": 20,
+    "duration_seconds": 60
+  },
+  "results": {
+    "total_requests": 4800,
+    "success": 4800,
+    "errors": 0,
+    "error_rate_percent": 0.0,
+    "requests_per_second": 80.0,
+    "avg_latency_ms": 51.58,
+    "min_latency_ms": 7.17,
+    "max_latency_ms": 1278.58
+  }
+}

@@ -1,0 +1,66 @@
+groups:
+  - name: microservices_alerts
+    rules:
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is DOWN"
+          description: "The service {{ $labels.job }} has been unreachable for more than 1 minute."
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.job }}"
+          description: "CPU usage on {{ $labels.job }} is above 80% for the last 2 minutes."
+
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024) > 400
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.job }}"
+          description: "Memory usage on {{ $labels.job }} exceeds 400MB."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate on {{ $labels.job }}"
+          description: "Error rate on {{ $labels.job }} is above 10% for the last minute."
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency on {{ $labels.job }}"
+          description: "95th percentile latency on {{ $labels.job }} is above 2 seconds."
+
+      - alert: OrderServiceHighLoad
+        expr: rate(process_cpu_seconds_total{job="order-service"}[5m]) * 100 > 70
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Order Service under high load"
+          description: "Order Service CPU is above 70% - consider horizontal scaling."
+
+      - alert: DatabaseConnectionFailure
+        expr: up{job="db"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL database is unreachable"
+          description: "The PostgreSQL database has been down for more than 30 seconds."
