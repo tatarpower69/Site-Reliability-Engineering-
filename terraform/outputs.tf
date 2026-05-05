@@ -1,21 +1,34 @@
+output "public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_eip.main.public_ip
+}
+
 output "instance_id" {
   description = "ID of the EC2 instance"
-  value       = aws_instance.app_server.id
+  value       = aws_instance.server.id
 }
 
-output "instance_public_ip" {
-  description = "Public IP address of the EC2 instance"
-  value       = aws_instance.app_server.public_ip
-}
-
-output "web_port" {
-  value = var.http_port
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = aws_vpc.main.id
 }
 
 output "grafana_url" {
-  value = "http://${aws_instance.app_server.public_ip}:${var.grafana_port}"
+  description = "URL for Grafana dashboard"
+  value       = "http://${aws_eip.main.public_ip}:${var.grafana_port}"
 }
 
 output "prometheus_url" {
-  value = "http://${aws_instance.app_server.public_ip}:${var.prometheus_port}"
+  description = "URL for Prometheus dashboard"
+  value       = "http://${aws_eip.main.public_ip}:${var.prometheus_port}"
+}
+
+output "app_url" {
+  description = "URL for the main application"
+  value       = "http://${aws_eip.main.public_ip}:${var.http_port}"
+}
+
+output "ssh_command" {
+  description = "Command to SSH into the instance"
+  value       = "ssh -i ${var.project_name}-key.pem ubuntu@${aws_eip.main.public_ip}"
 }
