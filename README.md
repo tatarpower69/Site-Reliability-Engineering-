@@ -1,49 +1,27 @@
-# SRE Automation & Capacity Planning Project
+# Microservices Platform (SRE & DevOps)
 
-This repository contains a containerized microservices system enhanced with SRE principles, automated troubleshooting, and capacity planning analysis.
+Secure and monitored microservices architecture deployed on AWS.
 
 ## Features
+- **5 Microservices**: Auth, User, Product, Order, Chat (FastAPI).
+- **Reverse Proxy**: Nginx acting as an API Gateway (Port 80).
+- **Security**: Closed public ports, SSL-ready, and secrets management via `.env`.
+- **Monitoring**: Full observability stack with Prometheus & Grafana.
+- **Reliability**: Automated Docker health checks and self-healing (auto-restart).
+- **IaC**: Infrastructure provisioning via Terraform.
 
-### 1. Automation (Assignment 6)
-- **Automated Deployment**: Orchestrated with Docker Compose and provisioned via Terraform on AWS.
-- **Self-Healing**: Health checks and restart policies for all services.
-- **Configuration Validation**: `validate_config.sh` script to ensure environment correctness before deployment.
-- **Log-Based Troubleshooting**: `troubleshoot.sh` script for automated root cause analysis.
-
-### 2. Observability & Alerting
-- **Full Monitoring**: Prometheus & Grafana stack.
-- **DB Insights**: Integrated `postgres-exporter` for database health metrics.
-- **Custom Alerts**: 7+ alerting rules (ServiceDown, HighCPU, DBFailure, etc.).
-
-### 3. Capacity Planning
-- **Load Simulation**: `load_test.py` for stress testing the system.
-- **Metrics Analysis**: Documented resource consumption and scaling strategies.
-
-### 4. Infrastructure as Code (Assignment 5)
-- **Professional Terraform**: VPC, Subnets, Internet Gateway, and Automated Key Management.
+## Project Structure
+- `/auth-service`, `/user-service`, etc. - Application source code.
+- `/frontend` - Static UI and Nginx configuration.
+- `/monitoring` - Prometheus scrape configs and Grafana dashboards.
+- `/terraform` - AWS infrastructure scripts.
+- `/scripts` - Incident simulation and maintenance tools.
 
 ## Quick Start
+1. Configure `.env` from `.env.example`.
+2. Run `docker-compose up -d`.
+3. Validate configuration: `./validate_config.ps1`.
 
-1. **Validate Configuration**:
-   ```bash
-   sh validate_config.sh
-   ```
-
-2. **Deploy Locally**:
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Analyze Logs**:
-   ```bash
-   sh troubleshoot.sh
-   ```
-
-4. **Run Load Test**:
-   ```bash
-   python load_test.py 20 60
-   ```
-
-## Infrastructure
-
-The cloud environment is provisioned in AWS `us-east-1` using Terraform. See the `terraform/` directory for details.
+## Monitoring
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3000 (Admin password in .env)
