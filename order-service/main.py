@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from prometheus_client import Gauge, Counter
 import os
@@ -13,11 +14,22 @@ logger = logging.getLogger("order-service")
 
 app = FastAPI(title="Order Service")
 
-DB_HOST = os.getenv("DB_HOST", "db")
-DB_PORT = os.getenv("DB_PORT", "5432")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Database configuration from environment variables
 DB_USER = os.getenv("POSTGRES_USER", "user")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "password")
 DB_NAME = os.getenv("POSTGRES_DB", "microservices")
+DB_HOST = os.getenv("DB_HOST", "db")
+DB_PORT = os.getenv("DB_PORT", "5432")
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 PRODUCT_SERVICE_URL = os.getenv("PRODUCT_SERVICE_URL", "http://product-service:8000")
 
@@ -53,9 +65,12 @@ def read_root():
     return {"message": "Order Service is running"}
 
 @app.get("/orders")
-async def get_orders():
-    ACTIVE_ORDERS.set(10) # Example value
-    return {"orders": []}
+def get_orders():
+    ACTIVE_ORDERS.set(10)
+    return [
+        {"id": 5001, "item": "Laptop", "status": "shipped"},
+        {"id": 5002, "item": "Monitor", "status": "pending"}
+    ]
 
 @app.post("/orders")
 async def create_order(product_id: int, quantity: int):

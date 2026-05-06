@@ -4,190 +4,105 @@ services:
   auth-service:
     build: ./auth-service
     ports:
-      - "8001:8000"
-    restart: unless-stopped
+      - "${AUTH_PORT}:8000"
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=${POSTGRES_USER:-user}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - DB_NAME=${POSTGRES_DB:-microservices}
+      - DATABASE_URL=${DATABASE_URL}
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
 
   user-service:
     build: ./user-service
     ports:
-      - "8002:8000"
-    restart: unless-stopped
+      - "${USER_PORT}:8000"
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=${POSTGRES_USER:-user}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - DB_NAME=${POSTGRES_DB:-microservices}
+      - DATABASE_URL=${DATABASE_URL}
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
 
   product-service:
     build: ./product-service
     ports:
-      - "8003:8000"
-    restart: unless-stopped
+      - "${PRODUCT_PORT}:8000"
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=${POSTGRES_USER:-user}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - DB_NAME=${POSTGRES_DB:-microservices}
+      - DATABASE_URL=${DATABASE_URL}
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
 
   order-service:
     build: ./order-service
     ports:
-      - "8004:8000"
-    restart: unless-stopped
+      - "${ORDER_PORT}:8000"
     environment:
-      - DB_HOST=${DB_HOST:-db}
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_USER=${POSTGRES_USER:-user}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - DB_NAME=${POSTGRES_DB:-microservices}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DB_HOST=db
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
 
   chat-service:
     build: ./chat-service
     ports:
-      - "8005:8000"
+      - "${CHAT_PORT}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-microservices}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-microservices}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
       timeout: 5s
       retries: 5
     networks:
       - micro-network
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
 
   db-exporter:
     image: prometheuscommunity/postgres-exporter
     environment:
-      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-microservices}?sslmode=disable
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable"
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      - micro-network
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./frontend/index.html:/usr/share/nginx/html/index.html
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    depends_on:
-      auth-service:
-        condition: service_started
-      user-service:
-        condition: service_started
-      product-service:
-        condition: service_started
-      order-service:
-        condition: service_started
-      chat-service:
-        condition: service_started
     networks:
       - micro-network
 
@@ -196,26 +111,33 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./monitoring/alert.rules.yml:/etc/prometheus/alert.rules.yml
-      - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
-    restart: unless-stopped
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.time=15d'
+      - "${PROMETHEUS_PORT}:9090"
     networks:
       - micro-network
 
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
-    restart: unless-stopped
+      - "${GRAFANA_PORT}:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - micro-network
+
+  nginx:
+    image: nginx:latest
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./frontend:/usr/share/nginx/html
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "${NGINX_PORT}:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - micro-network
 
@@ -225,5 +147,3 @@ networks:
 
 volumes:
   postgres_data:
-  prometheus_data:
-  grafana_data:

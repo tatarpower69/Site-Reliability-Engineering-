@@ -124,6 +124,14 @@ resource "aws_security_group" "main" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  ingress {
+    from_port   = 8001
+    to_port     = 8005
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Microservices direct access"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -165,7 +173,6 @@ resource "aws_instance" "server" {
               systemctl start docker
               systemctl enable docker
               
-              # Clone and run (you can replace the URL with your repo)
               cd /home/ubuntu
               git clone https://github.com/tatarpower69/Site-Reliability-Engineering-.git project
               cd project

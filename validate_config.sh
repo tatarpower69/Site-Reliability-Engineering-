@@ -1,22 +1,19 @@
 #!/bin/bash
 
-echo "=================================================="
-echo "SRE CONFIGURATION & ENVIRONMENT VALIDATOR"
-echo "=================================================="
+echo "sre configuration & environment validator"
 
-# 1. Check for .env file
-echo -n "[1/5] Checking for .env file... "
+# 1. check .env file
+echo -n "[1/5] checking for .env file "
 if [ ! -f .env ]; then
     echo "ERROR: .env file not found"
     exit 1
 fi
 echo "OK"
 
-# Source the .env file to check variables
 source .env
 
-# 2. Detailed Environment Validation (like your friend's script)
-echo "[2/5] Validating environment variables..."
+# 2. env validation
+echo "[2/5] validating environment var.."
 
 CHECK_VARS=("POSTGRES_USER" "POSTGRES_PASSWORD" "POSTGRES_DB")
 for VAR in "${CHECK_VARS[@]}"; do
@@ -28,8 +25,8 @@ for VAR in "${CHECK_VARS[@]}"; do
     fi
 done
 
-# 3. Check required ports
-echo "[3/5] Checking required system ports..."
+# 3. check req ports
+echo "[3/5] checking req system ports..."
 PORTS=(8001 8002 8003 8004 8005 3000 9090 80)
 for PORT in "${PORTS[@]}"; do
     if netstat -tuln | grep -q ":$PORT "; then
@@ -39,8 +36,8 @@ for PORT in "${PORTS[@]}"; do
     fi
 done
 
-# 4. Validating docker-compose.yml syntax
-echo -n "[4/5] Validating docker-compose.yml syntax... "
+# 4. validate docker-compose.yml
+echo -n "[4/5] validating docker-compose.yml syntax... "
 docker-compose config -q > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "VALID"
@@ -49,15 +46,14 @@ else
     exit 1
 fi
 
-# 5. Verifying Monitoring Config
-echo -n "[5/5] Verifying Prometheus Alert Rules... "
+# ver monitoring 
+echo -n "[5/5] verifying Prometheus Alert Rules... "
 if [ -f monitoring/alert.rules.yml ]; then
-    echo "FOUND"
+    echo "found"
 else
-    echo "MISSING"
+    echo "missing"
     exit 1
 fi
 
-echo "=================================================="
-echo "Validation Complete. System is READY."
-echo "=================================================="
+echo "validation complete. system is ready."
+

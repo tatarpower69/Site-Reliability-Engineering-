@@ -1,7 +1,16 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(title="Chat Service")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health")
 def health():
@@ -14,8 +23,9 @@ def read_root():
 @app.get("/messages")
 def get_messages():
     return [
-        {"from": "admin", "text": "Welcome to the system!"},
-        {"from": "user_1", "text": "Hello, I need help with my order."}
+        {"from": "admin", "msg": "System status: OK"},
+        {"from": "sre", "msg": "Load test completed"},
+        {"from": "user_1", "text": "Hello, I need help!"}
     ]
 
 Instrumentator().instrument(app).expose(app)

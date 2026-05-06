@@ -1,0 +1,214 @@
+:root {
+    --bg: #0a0c10;
+    --card-bg: rgba(23, 28, 36, 0.7);
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.5);
+    --success: #10b981;
+    --error: #ef4444;
+    --text-main: #f3f4f6;
+    --text-dim: #9ca3af;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 2rem;
+    overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.service-info h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.service-info p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.port-tag {
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    color: var(--accent);
+}
+
+.btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+button {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.03);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+button:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.log-view {
+    margin-top: 1.5rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1rem;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    height: 120px;
+    overflow-y: auto;
+    border: 1px solid rgba(255,255,255,0.05);
+    color: #a5b4fc;
+    white-space: pre-wrap;
+}
+
+.stats-panel {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.chart-container {
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    border: 1px solid var(--glass-border);
+    height: 400px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.metric-mini-card {
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metric-mini-card h4 {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+}
