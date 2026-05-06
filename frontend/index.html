@@ -26,11 +26,11 @@
                     <h3>Auth Service</h3>
                     <p>IDENTITY & ACCESS</p>
                 </div>
-                <span class="port-tag">PORT 8001</span>
+                <span class="port-tag">API /auth</span>
             </div>
             <div class="btn-group">
-                <button onclick="testService('auth', 'health', 8001)">Health Check</button>
-                <button onclick="testService('auth', 'info', 8001)">Get System Info</button>
+                <button onclick="testService('auth', 'health')">Health Check</button>
+                <button onclick="testService('auth', 'info')">Get System Info</button>
             </div>
             <div class="log-view" id="log-auth">Waiting for telemetry...</div>
         </div>
@@ -41,11 +41,11 @@
                     <h3>User Service</h3>
                     <p>PROFILE MANAGEMENT</p>
                 </div>
-                <span class="port-tag">PORT 8002</span>
+                <span class="port-tag">API /user</span>
             </div>
             <div class="btn-group">
-                <button onclick="testService('user', 'health', 8002)">Health Check</button>
-                <button onclick="testService('user', 'users', 8002)">Fetch Directory</button>
+                <button onclick="testService('user', 'health')">Health Check</button>
+                <button onclick="testService('user', 'users')">Fetch Directory</button>
             </div>
             <div class="log-view" id="log-user">Waiting for telemetry...</div>
         </div>
@@ -56,11 +56,11 @@
                     <h3>Product Service</h3>
                     <p>INVENTORY & CATALOG</p>
                 </div>
-                <span class="port-tag">PORT 8003</span>
+                <span class="port-tag">API /product</span>
             </div>
             <div class="btn-group">
-                <button onclick="testService('product', 'health', 8003)">Health Check</button>
-                <button onclick="testService('product', 'products', 8003)">Browse Catalog</button>
+                <button onclick="testService('product', 'health')">Health Check</button>
+                <button onclick="testService('product', 'products')">Browse Catalog</button>
             </div>
             <div class="log-view" id="log-product">Waiting for telemetry...</div>
         </div>
@@ -71,11 +71,11 @@
                     <h3>Order Service</h3>
                     <p>TRANSACTION ENGINE</p>
                 </div>
-                <span class="port-tag">PORT 8004</span>
+                <span class="port-tag">API /order</span>
             </div>
             <div class="btn-group">
-                <button onclick="testService('order', 'health', 8004)">Health Check</button>
-                <button onclick="testService('order', 'orders', 8004)">Active Orders</button>
+                <button onclick="testService('order', 'health')">Health Check</button>
+                <button onclick="testService('order', 'orders')">Active Orders</button>
             </div>
             <div class="log-view" id="log-order">Waiting for telemetry...</div>
         </div>
@@ -86,11 +86,11 @@
                     <h3>Chat Service</h3>
                     <p>REAL-TIME COMMS</p>
                 </div>
-                <span class="port-tag">PORT 8005</span>
+                <span class="port-tag">API /chat</span>
             </div>
             <div class="btn-group">
-                <button onclick="testService('chat', 'health', 8005)">Health Check</button>
-                <button onclick="testService('chat', 'messages', 8005)">Recent Threads</button>
+                <button onclick="testService('chat', 'health')">Health Check</button>
+                <button onclick="testService('chat', 'messages')">Recent Threads</button>
             </div>
             <div class="log-view" id="log-chat">Waiting for telemetry...</div>
         </div>

@@ -34,7 +34,9 @@ foreach ($var in $checkVars) {
 
 # 3. check req ports
 Write-Host "[3/5] checking required system ports..."
-$ports = 8001, 8002, 8003, 8004, 8005, 3000, 9090, 80
+# We only need 80 (Proxy), 3000 (Grafana), 9090 (Prometheus)
+# Ports 8001-8005 are now HIDDEN for better security
+$ports = 80, 3000, 9090
 $netstat = netstat -an
 foreach ($port in $ports) {
     if ($netstat -match ":$port\s+") {

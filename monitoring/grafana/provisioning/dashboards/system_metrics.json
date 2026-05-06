@@ -39,7 +39,7 @@
       },
       "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
       "id": 2,
-      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "text": { "titleSize": 24, "valueSize": 60 }, "textMode": "value" },
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "value" },
       "targets": [
         { "expr": "database_connected", "refId": "A" }
       ],

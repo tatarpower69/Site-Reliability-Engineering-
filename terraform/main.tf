@@ -124,14 +124,6 @@ resource "aws_security_group" "main" {
     cidr_blocks = [var.vpc_cidr]
   }
 
-  ingress {
-    from_port   = 8001
-    to_port     = 8005
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Microservices direct access"
-  }
-
   egress {
     from_port   = 0
     to_port     = 0

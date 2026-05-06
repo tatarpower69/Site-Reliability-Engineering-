@@ -1,7 +1,7 @@
 groups:
-  - name: sre_automation_alerts
+  - name: microservices_alerts
     rules:
-      # Alert for high CPU usage (Criterion 4.2.3.2.a)
+      # Alert for high CPU usage
       - alert: HighCpuUsage
         expr: container_cpu_usage_seconds_total > 0.8
         for: 1m
@@ -11,7 +11,7 @@ groups:
           summary: "High CPU usage detected on {{ $labels.instance }}"
           description: "CPU usage is above 80% for more than 1 minute."
 
-      # Alert for service downtime (Criterion 4.2.3.2.b)
+      # Alert for service downtime
       - alert: ServiceDown
         expr: up == 0
         for: 30s
@@ -21,7 +21,7 @@ groups:
           summary: "Service {{ $labels.job }} is down"
           description: "Microservice has been unavailable for more than 30 seconds."
 
-      # Alert for increased error rates (Criterion 4.2.3.2.c)
+      # Alert for increased error rates
       - alert: HighErrorRate
         expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
         for: 1m

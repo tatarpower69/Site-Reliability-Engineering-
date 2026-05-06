@@ -1,13 +1,12 @@
 let requestCount = 1200;
 
-async function testService(service, endpoint, port) {
+async function testService(service, endpoint) {
     const logElement = document.getElementById(`log-${service}`);
-    logElement.textContent = `Connecting to ${service} on port ${port}...`;
+    logElement.textContent = `Connecting to ${service} via Proxy...`;
     
     try {
-        // Detect if we are running in cloud or local
-        const host = window.location.hostname;
-        const response = await fetch(`http://${host}:${port}/${endpoint}`);
+        // Use relative path for Proxy (works for both local and cloud)
+        const response = await fetch(`/api/${service}/${endpoint}`);
         const data = await response.json();
         logElement.textContent = JSON.stringify(data, null, 2);
         
@@ -23,7 +22,7 @@ async function testService(service, endpoint, port) {
         card.style.borderColor = 'var(--success)';
         setTimeout(() => card.style.borderColor = 'var(--glass-border)', 1000);
     } catch (error) {
-        logElement.textContent = `CRITICAL ERROR: ${error.message}\nCheck CORS or Service Status.`;
+        logElement.textContent = `PROXY ERROR: ${error.message}\nMake sure Nginx Proxy is running.`;
         document.getElementById(`card-${service}`).style.borderColor = 'var(--error)';
     }
 }
